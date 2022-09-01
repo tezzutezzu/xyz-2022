@@ -1,0 +1,22 @@
+{
+  "name": "fontstretch",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel src/index.html src/index2.html --port 8080 --https",
+    "build": "parcel build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.7.0",
+    "parcel-reporter-static-files-copy": "^1.4.0",
+    "querystring-es3": "^0.2.1"
+  },
+  "dependencies": {
+    "dat.gui": "^0.7.9",
+    "pixi-webfont-loader": "^1.0.2",
+    "pixi.js": "^6.5.2"
+  }
+}

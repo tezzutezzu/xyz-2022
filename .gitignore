@@ -1,0 +1,6 @@
+originali/**
+node_modules/
+static/**
+.parcel-cache/
+recover.txt
+dist/
