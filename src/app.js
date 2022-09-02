@@ -8,14 +8,12 @@ let activeMasks = []
 
 const settings = {}
 var temi = [
-  // "intergen",
+  "comunita",
   "turismo",
   "trasgressione",
   "identita",
   "politica",
   "rito",
-  // "rito",
-  // "trash",
 ]
 
 function connect() {
@@ -60,21 +58,30 @@ function midiMessageReceived(event) {
 }
 
 const update = () => {
-  activeMasks = temi.filter((d) => settings[`tema ${d}`] > 50)
-  const activeLayers = animations.filter(
-    (d) => activeMasks.indexOf(d.theme) != -1
-  )
-  animations.forEach((d) => d.graphics.clear())
+  const activeLayers = []
+  temi.forEach((theme) => {
+    const ani = animations.find((d) => d.theme === theme)
+    ani.mainContainer.visible = false
+    ani.graphics.clear()
+    if (settings[`tema ${theme}`] > 50) {
+      ani.mainContainer.visible = true
+      activeLayers.push(ani)
+    }
+  })
 
   // draw masks
   const maskWidth = window.innerWidth / activeLayers.length
   activeLayers.forEach((layer, i) => {
-    const x = i * maskWidth
-
+    const x = i * maskWidth + maskWidth * 0.5
     layer.graphics.beginFill(layer.color)
-    layer.graphics.drawRect(x, 0, maskWidth, window.innerHeight)
+    layer.graphics.drawRect(
+      x - maskWidth * 0.5,
+      0,
+      maskWidth,
+      window.innerHeight
+    )
     layer.graphics.endFill()
-    layer.mainContainer.position.x = (-window.innerWidth + maskWidth) * 0.5 + x
+    layer.mainContainer.position.x = x
 
     const value = settings[`knob ${layer.theme}`]
 
@@ -87,14 +94,13 @@ const update = () => {
   })
 
   // update display text
-  var s = ""
-  temi.forEach((d) => {
-    if (settings[`tema ${d}`] > 50) {
-      s += `${d} ${Math.round(settings[`knob ${d}`])}<br/>`
-    }
-  })
-
-  debugText.innerHTML = s
+  // var s = ""
+  // temi.forEach((d) => {
+  //   if (settings[`tema ${d}`] > 50) {
+  //     s += `${d} ${Math.round(settings[`knob ${d}`])}<br/>`
+  //   }
+  // })
+  // debugText.innerHTML = s
 }
 
 temi.forEach((d) => {
@@ -146,7 +152,7 @@ class Animation {
     this.friction = 0.9
     this.color = Math.random() * 0xffffff
     this.direction = i % 2 ? 1 : -1
-    for (let i = 1; i < 7; i++) {
+    for (let i = 1; i < 16; i++) {
       this.frames.push(`assets/${tema}/${i}.png`)
     }
 
@@ -169,13 +175,14 @@ class Animation {
         s.position.y = 1080 * (i - this.frames.length / 2)
         this.secondBatch.push(s)
       }
-      s.alpha = 0.5
+      s.anchor.set(0.5, 0)
       this.container.addChild(s)
     })
     this.container.position.y = (-1080 * this.frames.length) / 2
 
     this.mainContainer.mask = this.graphics
     this.mainContainer.addChild(this.container)
+    // this.mainContainer.addChild(this.graphics)
     app.stage.addChild(this.mainContainer)
   }
 
