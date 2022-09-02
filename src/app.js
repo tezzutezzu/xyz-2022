@@ -1,3 +1,4 @@
+// import { PixelateFilter } from "@pixi/filter-pixelate"
 import * as dat from "dat.gui"
 import * as PIXI from "pixi.js"
 
@@ -15,6 +16,7 @@ var temi = [
   "politica",
   "rito",
 ]
+gui.close()
 
 function connect() {
   navigator.requestMIDIAccess().then(
@@ -63,7 +65,7 @@ const update = () => {
     const ani = animations.find((d) => d.theme === theme)
     ani.mainContainer.visible = false
     ani.graphics.clear()
-    if (settings[`tema ${theme}`] > 50) {
+    if (settings[`tema ${theme}`] > 10) {
       ani.mainContainer.visible = true
       activeLayers.push(ani)
     }
@@ -71,17 +73,37 @@ const update = () => {
 
   // draw masks
   const maskWidth = window.innerWidth / activeLayers.length
+
+  const secondMaskWidths = []
+  let totalWidth = 0
   activeLayers.forEach((layer, i) => {
-    const x = i * maskWidth + maskWidth * 0.5
-    layer.graphics.beginFill(layer.color)
-    layer.graphics.drawRect(
-      x - maskWidth * 0.5,
-      0,
-      maskWidth,
-      window.innerHeight
-    )
-    layer.graphics.endFill()
-    layer.mainContainer.position.x = x
+    const faderValue = Math.min(1, settings[`tema ${layer.theme}`] / 60)
+    secondMaskWidths.push(maskWidth * faderValue)
+    totalWidth += maskWidth * faderValue
+  })
+
+  let x = 0
+  activeLayers.forEach((layer, i) => {
+    // layer.filter.blur =
+    //   (1 - Math.min(1, settings[`tema ${layer.theme}`] / 60)) * 100
+    const secondMaskWidth = secondMaskWidths[i]
+
+    // layer.graphics.beginFill(layer.color)
+    // layer.graphics.drawRect(
+    //   x - maskWidth * 0.5,
+    //   0,
+    //   maskWidth,
+    //   window.innerHeight
+    // )
+    // layer.graphics.endFill()
+
+    layer.secondMask.clear()
+    layer.secondMask.beginFill(layer.color)
+    layer.secondMask.drawRect(0, 0, secondMaskWidth, window.innerHeight)
+    layer.secondMask.endFill()
+    layer.container.x = secondMaskWidth / 2
+    layer.mainContainer.position.x = x + (window.innerWidth - totalWidth) / 2
+    x += secondMaskWidths[i]
 
     const value = settings[`knob ${layer.theme}`]
 
@@ -163,7 +185,11 @@ class Animation {
   init() {
     this.container = new PIXI.Container()
     this.mainContainer = new PIXI.Container()
-    // const ani = new PIXI.AnimatedSprite.fromFrames(this.frames)
+    this.secondMask = new PIXI.Graphics()
+    this.container.mask = this.secondMask
+    // this.filter = new PIXI.filters.BlurFilter()
+    // this.filter.quality = 10
+    // this.mainContainer.filters = [this.filter]
     this.firstBatch = []
     this.secondBatch = []
     this.frames.forEach((d, i) => {
@@ -175,13 +201,18 @@ class Animation {
         s.position.y = 1080 * (i - this.frames.length / 2)
         this.secondBatch.push(s)
       }
+
       s.anchor.set(0.5, 0)
       this.container.addChild(s)
     })
-    this.container.position.y = (-1080 * this.frames.length) / 2
 
-    this.mainContainer.mask = this.graphics
+    if (this.direction === 1) {
+      this.container.position.y = (-1080 * this.frames.length) / 2
+    }
+    // this.mainContainer.mask = this.graphics
     this.mainContainer.addChild(this.container)
+    this.mainContainer.addChild(this.secondMask)
+
     // this.mainContainer.addChild(this.graphics)
     app.stage.addChild(this.mainContainer)
   }
@@ -193,16 +224,16 @@ class Animation {
       this.direction = -1
     } else if (
       this.direction == -1 &&
-      this.container.position.y < (-(this.frames.length - 1) / 2) * 1080
+      this.container.position.y < -(this.frames.length / 2 - 1) * 1080
     ) {
-      this.container.position.y = (-(this.frames.length - 1) / 2) * 1080
+      this.container.position.y = -(this.frames.length / 2 - 1) * 1080
       this.direction = 1
     }
 
     const oscill = Math[this.index % 2 ? "cos" : "sin"](time * 0.0001)
     // this.container.position.x =
     //   oscill * window.innerWidth * 0.25 + window.innerWidth * 0.5
-    this.container.position.y += this.direction * this.friction * 4 //* settings[`knob ${this.theme}`] * 0.1
+    this.container.position.y += this.direction * this.friction * 10 //* settings[`knob ${this.theme}`] * 0.1
   }
 }
 

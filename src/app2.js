@@ -1,10 +1,16 @@
+import interpolate from "color-interpolate"
 import * as PIXI from "pixi.js"
 import { data } from "./data.js"
 import { MovingText } from "./MovingText"
 
 const rowSprites = []
 let mts = []
+let count = 0
 let textIndex = 0
+const colors = [0xff0000, 0x0000ff, 0x00ff00, 0x00ffff]
+
+const colormap = interpolate(colors)
+
 export let app
 
 const temi = [
@@ -28,7 +34,6 @@ document.fonts.ready.then(() => {
   document.body.appendChild(app.view)
 
   app.stage.addChild(background)
-  disegnaSfondo()
   start()
 }, 1000)
 
@@ -41,15 +46,36 @@ window.cambia = (index) => {
 }
 
 function start() {
+  background.clear()
+  background.beginFill(0xffffff)
+  background.drawRect(0, 0, window.innerWidth, window.height)
+  background.endFill()
+
   window.cambia(textIndex)
+
   app.ticker.add(update)
 }
 
+const rgba2hex = (rgba) =>
+  `#${rgba
+    .match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)$/)
+    .slice(1)
+    .map((n, i) =>
+      (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n))
+        .toString(16)
+        .padStart(2, "0")
+        .replace("NaN", "")
+    )
+    .join("")}`
+
+function colorToInt(s) {
+  return (parseInt(s.substr(1), 16) << 8) / 256
+}
+
 const update = () => {
-  // count += 0.05
-  // mts.forEach((a, i) => {
-  //   a.update(count)
-  // })
+  count += 0.0005
+
+  background.tint = colorToInt(rgba2hex(colormap(Math.cos(count) * 0.5 + 0.5)))
   rowSprites.forEach((sprite, i) => {
     sprite.position.y -= 2
   })
@@ -60,14 +86,21 @@ const update = () => {
     const t = 1 - mt.container.position.y / h
     mt.update(t)
   })
+
   const lastSprite = rowSprites[rowSprites.length - 1]
+
   if (lastSprite.position.y < -lastSprite.height) {
-    textIndex++
-    if (textIndex > data.length - 1) {
-      textIndex = 0
-    }
-    window.cambia(textIndex)
+    next()
   }
+}
+
+window.next = () => {
+  textIndex++
+  if (textIndex > data.length - 1) {
+    textIndex = 0
+  }
+  console.log(textIndex, data[textIndex])
+  window.cambia(textIndex)
 }
 
 const clear = () => {
@@ -126,24 +159,4 @@ const rowsIntoSprites = (array) => {
 
     rowSprites.push(sprite)
   })
-}
-
-const disegnaSfondo = () => {
-  var color = 0xff0000
-  // scegli il colore dello sfondo
-  var n = Math.random()
-  if (n < 0.2) {
-    color = 0xff0000
-  } else if (n < 0.4) {
-    color = 0x00ff00
-  } else if (n < 0.6) {
-    color = 0x0000ff
-  } else {
-    color = 0x00ffff
-  }
-
-  background.clear()
-  background.beginFill(color)
-  background.drawRect(0, 0, window.innerWidth, window.height)
-  background.endFill()
 }
