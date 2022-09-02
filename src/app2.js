@@ -15,29 +15,33 @@ const temi = [
   "rito",
   "turismo",
 ]
-
-window.height = window.innerHeight
-
-app = new PIXI.Application({
-  backgroundColor: 0,
-  width: window.innerWidth,
-  height: window.height,
-})
-document.body.appendChild(app.view)
-
 const background = new PIXI.Graphics()
-app.stage.addChild(background)
 
-window.cambia = (...array) => {
+setTimeout(() => {
+  window.height = window.innerHeight
+
+  app = new PIXI.Application({
+    backgroundColor: 0,
+    width: window.innerWidth,
+    height: window.height,
+  })
+  document.body.appendChild(app.view)
+
+  app.stage.addChild(background)
+  disegnaSfondo()
+  start()
+}, 1000)
+
+window.cambia = (index) => {
   clear()
-  rowsIntoSprites(array)
+  rowsIntoSprites([...window.data[index]])
   rowSprites.forEach((sprite) => {
     sprite.position.y += window.innerHeight
   })
 }
 
 function start() {
-  window.cambia(...data[textIndex])
+  window.cambia(textIndex)
   app.ticker.add(update)
 }
 
@@ -62,7 +66,7 @@ const update = () => {
     if (textIndex > data.length - 1) {
       textIndex = 0
     }
-    window.cambia(...data[textIndex])
+    window.cambia(textIndex)
   }
 }
 
@@ -136,9 +140,3 @@ const disegnaSfondo = () => {
   background.drawRect(0, 0, window.innerWidth, window.height)
   background.endFill()
 }
-
-window.setTimeout(() => {
-  start()
-}, 1000)
-
-disegnaSfondo()
