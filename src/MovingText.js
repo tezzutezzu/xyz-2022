@@ -28,21 +28,17 @@ export class MovingText {
       )
 
       this.sprite.position.y = -height * 0.1
-
       this.container.addChild(this.sprite)
       this.basicText.alpha = 0
       this.index = index
-      this.sprite.tileScale.x = -window.innerWidth
+      // this.sprite.tileScale.x = -window.innerWidth
       this.initiated = true
-      this.time = 0
     }, 100)
   }
 
   update(count) {
     if (!this.initiated) return
-    this.time += 0.0095
 
-    if (this.time > 1) this.time = 1
     const f = this.index % 2 ? "sin" : "cos"
     const direction = this.index % 2 ? 1 : -1
 
@@ -55,16 +51,12 @@ export class MovingText {
     }
     if (this.sprite.tileScale.x < this.target) {
       this.sprite.tileScale.x = 1
-      this.sprite.tileScale.x = ease(this.time) * this.target
-      // this.sprite.tileScale.y = easeInExpo(Math.min(1, this.time))
-
-      // *
-      // (this.index % 2 ? 1 : -1)
+      this.sprite.tileScale.x = ease(count) * this.target
     }
     // this.sprite.tilePosition.y++
 
     this.sprite.tilePosition.x =
-      (1 - ease(this.time)) * window.innerWidth * direction
+      (1 - ease(count)) * window.innerWidth * direction
   }
 }
 

@@ -4,6 +4,7 @@ import * as PIXI from "pixi.js"
 const gui = new dat.GUI()
 const debugText = document.querySelector(".debug")
 const animations = []
+let activeMasks = []
 
 const settings = {}
 var temi = [
@@ -57,8 +58,6 @@ function midiMessageReceived(event) {
 
   update()
 }
-
-let activeMasks = []
 
 const update = () => {
   activeMasks = temi.filter((d) => settings[`tema ${d}`] > 50)
