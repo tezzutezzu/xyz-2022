@@ -2,6 +2,7 @@
 /* prettier-ignore */
 export const data = [
   [
+    "simbolo", "identita", 1/3, 2,
     "IDENTITÀ", "lobular", true, 8,
     "La sagra è l'evento che", "baikal", false, 4,
     "presenta il vissuto ", "baikal", false, 5,
@@ -13,7 +14,6 @@ export const data = [
     "è la celebrazione ", "baikal", false, 5,
     "nostalgica di ", "basteleur", true, 5,
     "un mondo perduto.", "basteleur", true, 5,
-    "simbolo", "identita",1/3,0,
     "Le nuove reti sociali ", "ouroboros", false, 5,
     "ricercano visibilità adattandosi o ", "baikal", true, 5,
     "reinventando forme di narrazione ", "baikal", false, 5,

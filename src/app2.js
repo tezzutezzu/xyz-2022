@@ -17,7 +17,7 @@ const temi = [
 ]
 const background = new PIXI.Graphics()
 
-setTimeout(() => {
+document.fonts.ready.then(() => {
   window.height = window.innerHeight
 
   app = new PIXI.Application({
@@ -51,7 +51,7 @@ const update = () => {
   //   a.update(count)
   // })
   rowSprites.forEach((sprite, i) => {
-    sprite.position.y -= 1
+    sprite.position.y -= 2
   })
 
   mts.forEach((mt) => {
@@ -92,11 +92,18 @@ const rowsIntoSprites = (array) => {
   rowsData.map((riga, i) => {
     let sprite
     if (riga[0] === "simbolo") {
+      const align = riga[3]
       sprite = PIXI.Sprite.from(`assets/simboli/${riga[1]}.png`)
       const scale = (window.innerWidth / 4268) * riga[2]
       sprite.scale.x = sprite.scale.y = scale
       sprite.position.y = offset
       app.stage.addChild(sprite)
+
+      if (align === 1) {
+        sprite.position.x = (window.innerWidth - scale * 4268) / 2
+      } else if (align === 2) {
+        sprite.position.x = window.innerWidth - scale * 4268
+      }
       offset += scale * 4268
     } else if (riga[0] === "titolo") {
       sprite = PIXI.Sprite.from(`assets/header/${riga[1]}.png`)

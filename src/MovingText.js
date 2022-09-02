@@ -42,21 +42,15 @@ export class MovingText {
     const f = this.index % 2 ? "sin" : "cos"
     const direction = this.index % 2 ? 1 : -1
 
-    // this.sprite.tileScale.x = 2 + Math[f](count) + Math[f](count)
-    // this.sprite.tileScale.x = 2 + Math[f](Math.sin(count) * 0.2)
-    // this.sprite.tileScale.x = 2 + Math[f](count)
     if (this.target == null && this.sprite.texture.width !== 0) {
       this.target = window.innerWidth / this.sprite.texture.width
       this.height = this.sprite.texture.height
     }
-    if (this.sprite.tileScale.x < this.target) {
-      this.sprite.tileScale.x = 1
-      this.sprite.tileScale.x = ease(count) * this.target
-    }
-    // this.sprite.tilePosition.y++
+    this.sprite.tileScale.x = this.target
+    this.sprite.tileScale.x = ease(count) * this.target
 
     this.sprite.tilePosition.x =
-      (1 - ease(count)) * window.innerWidth * direction
+      (1 - ease(count)) * window.innerWidth * 4 * direction
   }
 }
 
