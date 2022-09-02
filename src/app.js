@@ -233,7 +233,7 @@ class Animation {
     const oscill = Math[this.index % 2 ? "cos" : "sin"](time * 0.0001)
     // this.container.position.x =
     //   oscill * window.innerWidth * 0.25 + window.innerWidth * 0.5
-    this.container.position.y += this.direction * this.friction * 10 //* settings[`knob ${this.theme}`] * 0.1
+    this.container.position.y += this.direction * this.friction * 2 //* settings[`knob ${this.theme}`] * 0.1
   }
 }
 
